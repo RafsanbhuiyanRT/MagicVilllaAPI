@@ -12,6 +12,7 @@ namespace Magic_VilllaAPI.Controllers;
 public class VillaApiControllers : ControllerBase
 {
     [HttpGet]
+    [ProducesResponseType(200)]
     public ActionResult<IEnumerable<VillaDTO>> GetVillas()
     {
         return Ok(VillaStore.villaList);
@@ -33,5 +34,22 @@ public class VillaApiControllers : ControllerBase
             return NotFound();
         }
         return Ok();
+    }
+
+    [HttpPost]
+    public ActionResult<VillaDTO> CreateVilla([FromBody]VillaDTO villaDTO) { 
+        if(villaDTO == null)
+        {
+            return BadRequest(villaDTO);
+        }
+        if(villaDTO .Id > 0)
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError);
+        }
+        villaDTO.Id = VillaStore.villaList.OrderDescending(u=>u.Id).FirstOrDefault().Id + 1;
+
+        VillaStore.villaList.Add(villaDTO );
+
+        return Ok(villaDTO);
     }
 }
